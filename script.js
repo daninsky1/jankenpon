@@ -13,23 +13,24 @@ function translateChoice2str(choice)
     }
 }
 
-function translateChoice2int(choice)
+function translateChoice2int(strChoice)
 {
-    choice = choice.toLowerCase();
-    choice = choice.trim();
-    if (choice == "rock") return ROCK;
-    else if (choice == "paper") return PAPER;
-    else if (choice == "scissor") return SCISSOR;
+    strChoice = strChoice.toLowerCase();
+    strChoice = strChoice.trim();
+    if (strChoice === "rock") return ROCK;
+    else if (strChoice === "paper") return PAPER;
+    else if (strChoice === "scissor") return SCISSOR;
+    else return null;
 }
 
 function computerPlay()
 {
-    return Math.floor(Math.random * POSSIBLE_CHOICES);
+    return Math.floor(Math.random() * POSSIBLE_CHOICES);
 }
 
-function getNext(selection)
+function getNext(intChoice)
 {
-    switch (selection) {
+    switch (intChoice) {
     case ROCK: return PAPER;
     case PAPER: return SCISSOR;
     case SCISSOR: return ROCK;
@@ -40,13 +41,51 @@ function getNext(selection)
 function playRound(playerSelection, computerSelection)
 {
     if (computerSelection === playerSelection) {
-        return "DRAW!"
+        console.log("DRAW!");
+        return 0;
     }
     else if (getNext(playerSelection) === computerSelection) {
         
-        return `You lose! ${translateChoice2str(computerSelection)} beats ${translateChoice2str(playerSelection)}`;
+        console.log(`You lose! ${translateChoice2str(computerSelection)} beats ${translateChoice2str(playerSelection)}`);
+        return -1;
     }
     else {
-        return `You win! ${translateChoice2str(playerSelection)} beats ${translateChoice2str(computerSelection)}`;
+        console.log(`You win! ${translateChoice2str(playerSelection)} beats ${translateChoice2str(computerSelection)}`);
+        return 1;
     }
 }
+
+function game(minRound=3)
+{
+    let comScore = 0;
+    let playerScore = 0;
+    let playerChoice = "";
+    let round = 0;
+    while ((round < minRound) || (comScore === playerScore)) {
+        playerChoice = translateChoice2int(prompt());
+        while (!playerChoice) {
+            playerChoice = translateChoice2int(prompt("Wrong input, choose rock paper or scissor."));
+        }
+        switch (playRound(playerChoice, computerPlay())) {
+        case 1: {
+            playerScore++;
+            break;
+        }
+        case -1: {
+            comScore++;
+            break;
+        }
+        }
+        round++;
+    }
+    console.assert(comScore != playerScore);
+    let gameOverMsg = "GAME OVER!";
+    if (comScore > playerScore)
+        gameOverMsg = gameOverMsg.concat(" YOU LOSE!");
+    else 
+        gameOverMsg = gameOverMsg.concat(" YOU WIN!");
+    console.log(gameOverMsg);
+    console.log(`Computer ${comScore} X Player ${playerScore}`);
+}
+
+game(3);
